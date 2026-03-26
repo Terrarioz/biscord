@@ -15,6 +15,7 @@
             --bg-900: #1E1F22; --bg-800: #2B2D31; --bg-700: #313338; --bg-600: #383A40;
             --text-main: #DBDEE1; --text-muted: #949BA4; --brand: #5865F2;
         }
+        /* Themes */
         body[data-theme="light"] {
             --bg-900: #E3E5E8; --bg-800: #F2F3F5; --bg-700: #FFFFFF; --bg-600: #EBEDEF;
             --text-main: #313338; --text-muted: #5C5E66;
@@ -22,6 +23,14 @@
         body[data-theme="neon"] {
             --bg-900: #0a001a; --bg-800: #140033; --bg-700: #1f004d; --bg-600: #330080;
             --text-main: #00ffcc; --text-muted: #ff00ff; --brand: #ff0055;
+        }
+        body[data-theme="hacker"] {
+            --bg-900: #000000; --bg-800: #0a0a0a; --bg-700: #111111; --bg-600: #1a1a1a;
+            --text-main: #00ff00; --text-muted: #008800; --brand: #00ff00;
+        }
+        body[data-theme="sunset"] {
+            --bg-900: #2b0f1c; --bg-800: #421b2d; --bg-700: #59253d; --bg-600: #753351;
+            --text-main: #ffd1dc; --text-muted: #e09ba5; --brand: #ff7b54;
         }
         
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-700); color: var(--text-main); overflow: hidden; }
@@ -38,11 +47,28 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--bg-900); border-radius: 4px; }
 
-        /* Nitro Name Colors & Decos */
+        /* Nitro Name Colors */
         .name-rainbow { background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); -webkit-background-clip: text; color: transparent; font-weight: bold;}
-        .name-neon { color: #00ffcc; text-shadow: 0 0 5px #00ffcc; }
+        .name-neon { color: #00ffcc; text-shadow: 0 0 5px #00ffcc; font-weight: bold;}
+        .name-gold { color: #ffd700; text-shadow: 0 0 5px #ffaa00; font-weight: bold;}
+        .name-crimson { color: #dc143c; text-shadow: 0 0 5px #8b0000; font-weight: bold;}
+        .name-ocean { color: #00bfff; text-shadow: 0 0 5px #0000ff; font-weight: bold;}
+
+        /* Nitro Halos / Decos */
         .deco-ring { border: 2px solid var(--brand); box-shadow: 0 0 10px var(--brand); }
         .deco-fire { box-shadow: 0 0 15px orange, inset 0 0 10px red; }
+        .deco-pulse { animation: pulse 1.5s infinite; border: 2px solid #00ffcc; }
+        .deco-golden { box-shadow: 0 0 20px #ffd700, inset 0 0 10px #ffaa00; border: 2px solid #ffd700;}
+        .deco-glitch { border: 2px dashed #ff00ff; box-shadow: 2px 2px 0px #00ffcc, -2px -2px 0px #ff0055; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 255, 204, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(0, 255, 204, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 255, 204, 0); } }
+
+        /* Profile Gradients */
+        .prof-grad-1 { background: linear-gradient(135deg, #1f004d, #ff0055); }
+        .prof-grad-2 { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
+        .prof-grad-3 { background: linear-gradient(135deg, #ff9966, #ff5e62); }
+        .prof-grad-4 { background: linear-gradient(135deg, #11998e, #38ef7d); }
+        .prof-grad-5 { background: linear-gradient(135deg, #8E2DE2, #4A00E0); }
+
     </style>
 </head>
 <body class="h-screen w-screen flex" data-theme="dark">
@@ -81,11 +107,10 @@
             <div id="panel-header" class="h-12 shadow-md flex items-center px-4 font-bold text-biscord-main border-b border-biscord-900 justify-between">
                 <span>Direct Messages</span>
             </div>
-            
             <div class="flex-1 overflow-y-auto p-2" id="nav-list"></div>
 
             <!-- User Profile Bottom Bar -->
-            <div class="h-[52px] bg-biscord-900 flex items-center px-2 gap-2 mt-auto">
+            <div class="h-[52px] bg-biscord-900 flex items-center px-2 gap-2 mt-auto shrink-0">
                 <div class="w-8 h-8 rounded-full bg-brand flex items-center justify-center text-white font-bold relative" id="user-avatar">?</div>
                 <div class="flex-1 truncate cursor-pointer" onclick="showSettings()">
                     <div class="text-sm font-bold text-biscord-main truncate" id="user-name">Loading...</div>
@@ -108,9 +133,24 @@
                 <!-- Chat or Friends render here -->
             </div>
 
-            <div id="chat-input-area" class="p-4 shrink-0 hidden">
+            <div id="chat-input-area" class="p-4 shrink-0 hidden relative">
+                <!-- Emoji Picker -->
+                <div id="emoji-picker" class="hidden absolute bottom-[70px] right-6 bg-biscord-800 border border-biscord-900 p-2 rounded-lg grid grid-cols-5 gap-2 text-2xl shadow-xl z-20">
+                    <span class="cursor-pointer hover:scale-110 transition" onclick="addEmoji('😀')">😀</span>
+                    <span class="cursor-pointer hover:scale-110 transition" onclick="addEmoji('😂')">😂</span>
+                    <span class="cursor-pointer hover:scale-110 transition" onclick="addEmoji('😎')">😎</span>
+                    <span class="cursor-pointer hover:scale-110 transition" onclick="addEmoji('😍')">😍</span>
+                    <span class="cursor-pointer hover:scale-110 transition" onclick="addEmoji('🤔')">🤔</span>
+                    <span class="cursor-pointer hover:scale-110 transition" onclick="addEmoji('🔥')">🔥</span>
+                    <span class="cursor-pointer hover:scale-110 transition" onclick="addEmoji('👍')">👍</span>
+                    <span class="cursor-pointer hover:scale-110 transition" onclick="addEmoji('❤️')">❤️</span>
+                    <span class="cursor-pointer hover:scale-110 transition" onclick="addEmoji('💀')">💀</span>
+                    <span class="cursor-pointer hover:scale-110 transition" onclick="addEmoji('🎉')">🎉</span>
+                </div>
+
                 <form id="message-form" class="bg-biscord-600 rounded-lg flex items-center px-4 py-2.5">
                     <input type="text" id="message-input" placeholder="Message..." class="bg-transparent border-none outline-none flex-1 text-biscord-main px-2" autocomplete="off">
+                    <i class="fa-solid fa-face-smile text-biscord-muted hover:text-white cursor-pointer ml-2 text-xl" onclick="document.getElementById('emoji-picker').classList.toggle('hidden')"></i>
                 </form>
             </div>
         </div>
@@ -135,63 +175,94 @@
         </div>
     </div>
 
+    <!-- Server Settings & Invites Modal -->
+    <div id="server-settings-modal" class="hidden absolute inset-0 bg-black/80 flex items-center justify-center z-50">
+        <div class="bg-biscord-800 p-6 rounded-lg w-[500px] shadow-xl text-biscord-main flex flex-col gap-4">
+            <h2 class="text-2xl font-bold">Server Settings</h2>
+            
+            <div class="border-b border-biscord-900 pb-4">
+                <h3 class="font-bold text-sm text-biscord-muted uppercase mb-2">Invite Friends (via DM)</h3>
+                <div id="server-invite-list" class="max-h-32 overflow-y-auto space-y-2"></div>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-sm text-biscord-muted uppercase mb-2">Manage Roles</h3>
+                <div id="server-roles-list" class="max-h-40 overflow-y-auto space-y-2"></div>
+            </div>
+            
+            <button onclick="hideModal('server-settings-modal')" class="mt-4 bg-biscord-600 px-4 py-2 rounded font-bold self-end">Close</button>
+        </div>
+    </div>
+
     <!-- User Settings & Nitro -->
     <div id="settings-modal" class="hidden absolute inset-0 bg-black/80 flex items-center justify-center z-50">
-        <div class="bg-biscord-800 p-8 rounded-lg w-[500px] shadow-xl text-biscord-main flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+        <div class="bg-biscord-800 p-8 rounded-lg w-[500px] shadow-xl text-biscord-main flex flex-col gap-4 max-h-[90vh] overflow-y-auto relative">
             <h2 class="text-2xl font-bold">User Settings</h2>
             
             <div>
                 <label class="text-xs text-biscord-muted uppercase">Username</label>
                 <div class="flex gap-2 mt-1">
-                    <input type="text" id="edit-username" class="flex-1 bg-biscord-900 p-2 rounded outline-none">
-                    <button onclick="saveUsername()" class="bg-brand px-4 rounded font-bold">Save</button>
+                    <input type="text" id="edit-username" class="flex-1 bg-biscord-900 p-2 rounded outline-none text-white">
+                    <button onclick="saveProfile()" class="bg-brand px-4 rounded font-bold text-white">Save</button>
                 </div>
             </div>
+            <div>
+                <label class="text-xs text-biscord-muted uppercase">Bio</label>
+                <textarea id="edit-bio" class="w-full bg-biscord-900 p-2 rounded outline-none text-white mt-1 h-20" placeholder="Tell us about yourself..."></textarea>
+            </div>
 
-            <div class="bg-brand/20 p-4 rounded border border-brand">
+            <div class="bg-brand/20 p-4 rounded border border-brand mt-2">
                 <h3 class="font-bold text-brand flex items-center gap-2"><i class="fa-solid fa-gem"></i> Biscord Nitro</h3>
                 <p class="text-sm text-biscord-muted mb-2">Claim for free to unlock themes, colors, and decos!</p>
-                <button onclick="claimNitro()" id="nitro-btn" class="bg-brand text-white px-4 py-2 rounded font-bold w-full">Claim Nitro</button>
+                <button onclick="claimNitro()" id="nitro-btn" class="bg-brand text-white px-4 py-2 rounded font-bold w-full hover:bg-indigo-600 transition">Claim Nitro</button>
                 
                 <div id="nitro-features" class="hidden mt-4 space-y-4 border-t border-brand/30 pt-4">
                     <div>
-                        <label class="text-xs text-biscord-muted uppercase">Theme</label>
-                        <select id="theme-select" onchange="updateProfile('theme', this.value)" class="w-full bg-biscord-900 p-2 rounded outline-none mt-1">
-                            <option value="dark">Dark</option><option value="light">Light</option><option value="neon">Neon</option>
+                        <label class="text-xs text-brand font-bold uppercase">App Theme</label>
+                        <select id="theme-select" onchange="updateProfile('theme', this.value)" class="w-full bg-biscord-900 text-white p-2 rounded outline-none mt-1 border border-biscord-700">
+                            <option value="dark">Dark</option><option value="light">Light</option><option value="neon">Neon</option><option value="hacker">Hacker</option><option value="sunset">Sunset</option>
                         </select>
                     </div>
                     <div>
-                        <label class="text-xs text-biscord-muted uppercase">Name Color</label>
-                        <select id="color-select" onchange="updateProfile('nameColor', this.value)" class="w-full bg-biscord-900 p-2 rounded outline-none mt-1">
-                            <option value="normal">Normal</option><option value="name-rainbow">Rainbow</option><option value="name-neon">Neon</option>
+                        <label class="text-xs text-brand font-bold uppercase">Name Color</label>
+                        <select id="color-select" onchange="updateProfile('nameColor', this.value)" class="w-full bg-biscord-900 text-white p-2 rounded outline-none mt-1 border border-biscord-700">
+                            <option value="normal">Normal</option><option value="name-rainbow">Rainbow</option><option value="name-neon">Neon</option><option value="name-gold">Gold</option><option value="name-crimson">Crimson</option><option value="name-ocean">Ocean</option>
                         </select>
                     </div>
                     <div>
-                        <label class="text-xs text-biscord-muted uppercase">Avatar Deco</label>
-                        <select id="deco-select" onchange="updateProfile('avatarDeco', this.value)" class="w-full bg-biscord-900 p-2 rounded outline-none mt-1">
-                            <option value="none">None</option><option value="deco-ring">Brand Ring</option><option value="deco-fire">Fire Glow</option>
+                        <label class="text-xs text-brand font-bold uppercase">Avatar Halo</label>
+                        <select id="deco-select" onchange="updateProfile('avatarDeco', this.value)" class="w-full bg-biscord-900 text-white p-2 rounded outline-none mt-1 border border-biscord-700">
+                            <option value="none">None</option><option value="deco-ring">Brand Ring</option><option value="deco-fire">Fire Glow</option><option value="deco-pulse">Neon Pulse</option><option value="deco-golden">Golden Halo</option><option value="deco-glitch">Glitch</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-brand font-bold uppercase">Profile Card Gradient</label>
+                        <select id="prof-grad-select" onchange="updateProfile('profileGrad', this.value)" class="w-full bg-biscord-900 text-white p-2 rounded outline-none mt-1 border border-biscord-700">
+                            <option value="bg-biscord-800">Default Dark</option><option value="prof-grad-1">Cyberpunk</option><option value="prof-grad-2">Deep Sea</option><option value="prof-grad-3">Mango</option><option value="prof-grad-4">Emerald</option><option value="prof-grad-5">Amethyst</option>
                         </select>
                     </div>
                 </div>
             </div>
             
             <button onclick="logout()" class="text-red-500 text-left mt-4 hover:underline">Log Out</button>
-            <button onclick="hideModal('settings-modal')" class="absolute top-4 right-4 text-biscord-muted"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            <button onclick="hideModal('settings-modal')" class="absolute top-4 right-4 text-biscord-muted hover:text-white"><i class="fa-solid fa-xmark text-2xl"></i></button>
         </div>
     </div>
 
     <!-- User Popout (Clicking profile in chat) -->
-    <div id="user-popout" class="hidden absolute bg-biscord-800 rounded-lg shadow-2xl border border-biscord-900 p-4 w-64 z-50">
-        <div class="flex items-center gap-3 border-b border-biscord-900 pb-3 mb-3">
-            <div id="popout-avatar" class="w-12 h-12 rounded-full bg-brand flex items-center justify-center text-white font-bold text-xl"></div>
-            <div>
-                <div id="popout-name" class="font-bold text-biscord-main text-lg"></div>
+    <div id="user-popout" class="hidden absolute rounded-lg shadow-2xl border border-biscord-900 p-4 w-72 z-50 transition-all">
+        <div class="flex items-center gap-4 border-b border-white/10 pb-4 mb-3">
+            <div id="popout-avatar" class="w-16 h-16 rounded-full bg-brand flex items-center justify-center text-white font-bold text-2xl shrink-0"></div>
+            <div class="min-w-0">
+                <div id="popout-name" class="font-bold text-biscord-main text-xl truncate"></div>
                 <div class="text-xs text-biscord-muted">Biscord User</div>
             </div>
         </div>
-        <div id="popout-mutual" class="text-xs text-biscord-muted mb-3">Mutual Friends: 0</div>
-        <button id="popout-add-friend" class="w-full bg-brand text-white py-1.5 rounded text-sm font-bold mb-2 hidden">Add Friend</button>
-        <button id="popout-invite" class="w-full bg-green-600 text-white py-1.5 rounded text-sm font-bold hidden">Invite to Server</button>
+        <div class="mb-4">
+            <div class="text-[10px] font-bold uppercase text-biscord-main/70 mb-1">About Me</div>
+            <div id="popout-bio" class="text-sm text-biscord-main leading-snug break-words"></div>
+        </div>
+        <button id="popout-add-friend" class="w-full bg-brand hover:bg-indigo-600 text-white py-2 rounded text-sm font-bold transition hidden">Add Friend</button>
     </div>
 
     <script>
@@ -212,11 +283,12 @@
         // --- 2. STATE ---
         let currentUser = null;
         let userData = {};
-        let currentView = 'home'; // 'home' or serverId
-        let currentChatId = null; // dmId or channelId
+        let currentView = 'home'; 
+        let currentChatId = null; 
         let isLoginMode = true;
         let activeServer = null;
         let allUsersCache = {}; 
+        let navListener = null; // Fix for DM dupe bug
 
         // --- 3. AUTH & USER ---
         document.getElementById('toggle-auth').onclick = () => {
@@ -238,7 +310,8 @@
                 if(!uname) return alert("Username required");
                 auth.createUserWithEmailAndPassword(email, pass).then(cred => {
                     db.ref('users/' + cred.user.uid).set({ 
-                        username: uname, email: email, nitro: false, theme: 'dark', nameColor: 'normal', avatarDeco: 'none'
+                        username: uname, email: email, nitro: false, theme: 'dark', 
+                        nameColor: 'normal', avatarDeco: 'none', profileGrad: 'bg-biscord-800', bio: ''
                     });
                 }).catch(err => alert(err.message));
             }
@@ -250,7 +323,6 @@
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('app-screen').classList.remove('hidden');
                 
-                // Track presence
                 db.ref(`.info/connected`).on('value', snap => {
                     if (snap.val()) {
                         const statusRef = db.ref(`status/${user.uid}`);
@@ -259,21 +331,18 @@
                     }
                 });
 
-                // Load user data
                 db.ref('users/' + user.uid).on('value', snap => {
                     userData = snap.val() || {};
                     document.getElementById('user-name').innerText = userData.username;
                     document.getElementById('user-avatar').innerText = userData.username.charAt(0).toUpperCase();
                     applyTheme(userData);
-                    goHome();
+                    if(currentView === 'home') goHome(); // Refresh home if there
                 });
 
-                // Cache all users for lookups
-                db.ref('users').on('value', snap => {
-                    allUsersCache = snap.val() || {};
-                });
+                db.ref('users').on('value', snap => { allUsersCache = snap.val() || {}; });
 
                 loadServers();
+                setTimeout(goHome, 500); // init
             } else {
                 document.getElementById('auth-screen').classList.remove('hidden');
                 document.getElementById('app-screen').classList.add('hidden');
@@ -294,16 +363,19 @@
             renderFriendsPage();
         }
 
+        // FIX FOR BUG 2 (Names duplicating): Clear innerHTML first, and clean up old listener
         function renderHomeNav() {
-            const navList = document.getElementById('nav-list');
-            navList.innerHTML = `
-                <div class="flex items-center gap-3 px-2 py-2 rounded hover:bg-biscord-700 cursor-pointer bg-biscord-700 mb-4" onclick="renderFriendsPage()">
-                    <i class="fa-solid fa-user-friends text-biscord-main"></i> <span class="text-biscord-main">Friends</span>
-                </div>
-                <div class="text-xs font-bold text-biscord-muted uppercase px-2 mb-2">Direct Messages</div>
-            `;
+            if (navListener) db.ref(`userDMs/${currentUser.uid}`).off('value', navListener);
             
-            db.ref(`userDMs/${currentUser.uid}`).on('value', snap => {
+            navListener = db.ref(`userDMs/${currentUser.uid}`).on('value', snap => {
+                const navList = document.getElementById('nav-list');
+                navList.innerHTML = `
+                    <div class="flex items-center gap-3 px-2 py-2 rounded hover:bg-biscord-700 cursor-pointer bg-biscord-700 mb-4" onclick="renderFriendsPage()">
+                        <i class="fa-solid fa-user-friends text-biscord-main"></i> <span class="text-biscord-main">Friends</span>
+                    </div>
+                    <div class="text-xs font-bold text-biscord-muted uppercase px-2 mb-2">Direct Messages</div>
+                `; // Always clear before looping
+
                 const dms = snap.val() || {};
                 for (let otherUid in dms) {
                     const dmId = dms[otherUid];
@@ -312,7 +384,7 @@
                     
                     const div = document.createElement('div');
                     div.className = "flex items-center gap-2 px-2 py-1.5 rounded hover:bg-biscord-700 cursor-pointer text-biscord-muted hover:text-biscord-main";
-                    div.innerHTML = `<div class="w-6 h-6 rounded-full bg-brand flex items-center justify-center text-white text-xs">${otherUser.username[0].toUpperCase()}</div> <span>${otherUser.username}</span>`;
+                    div.innerHTML = `<div class="w-6 h-6 rounded-full bg-brand flex items-center justify-center text-white text-xs ${otherUser.avatarDeco||''}">${otherUser.username[0].toUpperCase()}</div> <span class="${otherUser.nameColor||''}">${otherUser.username}</span>`;
                     div.onclick = () => openDM(dmId, otherUser.username, otherUid);
                     navList.appendChild(div);
                 }
@@ -325,9 +397,9 @@
             main.innerHTML = `
                 <div class="mb-6">
                     <h3 class="text-biscord-main font-bold mb-2 uppercase text-xs">Add Friend</h3>
-                    <div class="flex gap-2 bg-biscord-900 p-2 rounded-lg border border-brand">
-                        <input type="text" id="add-friend-input" placeholder="Enter username" class="bg-transparent border-none outline-none flex-1 text-biscord-main">
-                        <button onclick="sendFriendRequest()" class="bg-brand text-white px-4 py-1 rounded text-sm font-bold">Send</button>
+                    <div class="flex gap-2 bg-biscord-900 p-2 rounded-lg border border-brand/50">
+                        <input type="text" id="add-friend-input" placeholder="Enter username exactly" class="bg-transparent border-none outline-none flex-1 text-biscord-main">
+                        <button onclick="sendFriendRequest()" class="bg-brand text-white px-4 py-1 rounded text-sm font-bold">Send Request</button>
                     </div>
                 </div>
                 
@@ -338,9 +410,9 @@
                 <div id="friends-list" class="space-y-2"></div>
             `;
 
-            // Load Pending
             db.ref(`friendRequests/${currentUser.uid}`).on('value', snap => {
                 const list = document.getElementById('pending-list');
+                if(!list) return;
                 list.innerHTML = '';
                 snap.forEach(child => {
                     const reqUid = child.key;
@@ -357,9 +429,9 @@
                 });
             });
 
-            // Load Friends
             db.ref(`friends/${currentUser.uid}`).on('value', snap => {
                 const list = document.getElementById('friends-list');
+                if(!list) return;
                 list.innerHTML = '';
                 snap.forEach(child => {
                     const fUid = child.key;
@@ -367,7 +439,7 @@
                     if(!u) return;
                     list.innerHTML += `
                         <div class="flex justify-between items-center p-2 hover:bg-biscord-600 rounded cursor-pointer" onclick="startDM('${fUid}')">
-                            <div class="flex items-center gap-2"><div class="w-8 h-8 rounded-full bg-brand flex items-center justify-center text-white">${u.username[0]}</div> <span class="text-biscord-main">${u.username}</span></div>
+                            <div class="flex items-center gap-2"><div class="w-8 h-8 rounded-full bg-brand flex items-center justify-center text-white ${u.avatarDeco||''}">${u.username[0]}</div> <span class="${u.nameColor||'text-biscord-main'} font-bold">${u.username}</span></div>
                             <i class="fa-solid fa-message text-biscord-muted hover:text-white"></i>
                         </div>`;
                 });
@@ -412,6 +484,13 @@
             loadMessages(`dms/${dmId}`);
         }
 
+        function addEmoji(emoji) {
+            const input = document.getElementById('message-input');
+            input.value += emoji;
+            input.focus();
+            document.getElementById('emoji-picker').classList.add('hidden');
+        }
+
         // --- 6. SERVERS LOGIC ---
         function createServer() {
             const name = document.getElementById('new-server-name').value;
@@ -432,7 +511,7 @@
                 snap.forEach(child => {
                     const server = child.val();
                     if(server.members && server.members[currentUser.uid]) {
-                        list.innerHTML += `<div onclick="openServer('${child.key}')" class="w-12 h-12 bg-biscord-700 hover:bg-brand rounded-[24px] hover:rounded-[16px] transition-all flex items-center justify-center cursor-pointer text-white font-bold text-lg">${server.name[0].toUpperCase()}</div>`;
+                        list.innerHTML += `<div onclick="openServer('${child.key}')" class="w-12 h-12 bg-biscord-700 hover:bg-brand rounded-[24px] hover:rounded-[16px] transition-all flex items-center justify-center cursor-pointer text-white font-bold text-lg shadow-md">${server.name[0].toUpperCase()}</div>`;
                     }
                 });
             });
@@ -442,42 +521,40 @@
             currentView = serverId;
             document.getElementById('members-sidebar').classList.remove('hidden');
             document.getElementById('chat-input-area').classList.add('hidden');
-            document.getElementById('main-content').innerHTML = ''; // clear 
+            document.getElementById('main-content').innerHTML = ''; 
             
             db.ref(`servers/${serverId}`).on('value', snap => {
                 activeServer = snap.val();
                 if(!activeServer) return;
                 
                 const isAdmin = activeServer.members[currentUser.uid] === 'admin';
-                let headerHTML = `<span>${activeServer.name}</span>`;
-                if(isAdmin) headerHTML += `<i class="fa-solid fa-plus text-xs cursor-pointer hover:text-white" title="Add Channel" onclick="addChannel('${serverId}')"></i>`;
+                let headerHTML = `<span>${activeServer.name}</span> <div class="flex gap-3">`;
+                if(isAdmin) headerHTML += `<i class="fa-solid fa-gear text-biscord-muted cursor-pointer hover:text-white" title="Server Settings" onclick="openServerSettings('${serverId}')"></i> <i class="fa-solid fa-plus text-biscord-muted cursor-pointer hover:text-white" title="Add Channel" onclick="addChannel('${serverId}')"></i>`;
+                headerHTML += `</div>`;
                 
                 document.getElementById('panel-header').innerHTML = headerHTML;
                 
-                // Render Channels
                 const nav = document.getElementById('nav-list');
-                nav.innerHTML = '<div class="text-xs font-bold text-biscord-muted uppercase px-2 mb-2">Text Channels</div>';
+                nav.innerHTML = '<div class="text-xs font-bold text-biscord-muted uppercase px-2 mb-2 mt-2">Text Channels</div>';
                 for(let chId in activeServer.channels) {
                     const ch = activeServer.channels[chId];
                     nav.innerHTML += `<div onclick="openChannel('${serverId}', '${chId}', '${ch.name}')" class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-biscord-700 cursor-pointer text-biscord-muted hover:text-biscord-main"><i class="fa-solid fa-hashtag"></i> <span>${ch.name}</span></div>`;
                 }
 
-                // Render Members
                 const memList = document.getElementById('members-list');
                 memList.innerHTML = '';
                 for(let mUid in activeServer.members) {
                     const u = allUsersCache[mUid];
                     if(!u) continue;
                     const role = activeServer.members[mUid];
-                    const isOwner = activeServer.owner === mUid;
                     
                     memList.innerHTML += `
                         <div class="flex items-center gap-2 p-2 hover:bg-biscord-700 rounded cursor-pointer" onclick="showUserPopout(event, '${mUid}')">
-                            <div class="w-8 h-8 rounded-full bg-brand flex items-center justify-center text-white relative">
+                            <div class="w-8 h-8 rounded-full bg-brand flex items-center justify-center text-white relative ${u.avatarDeco||''}">
                                 ${u.username[0]}
-                                ${isOwner ? '<i class="fa-solid fa-crown absolute -top-1 -right-1 text-yellow-500 text-[10px]"></i>' : ''}
+                                ${role==='admin' ? '<i class="fa-solid fa-crown absolute -top-1 -right-1 text-yellow-500 text-[10px]"></i>' : ''}
                             </div>
-                            <span class="${u.nameColor || ''} font-medium text-sm">${u.username}</span>
+                            <span class="${u.nameColor || ''} font-bold text-sm">${u.username}</span>
                         </div>`;
                 }
             });
@@ -497,6 +574,63 @@
             loadMessages(`serverMessages/${serverId}/${channelId}`);
         }
 
+        // --- NEW: SERVER SETTINGS & INVITES ---
+        function openServerSettings(serverId) {
+            showModal('server-settings-modal');
+            const invList = document.getElementById('server-invite-list');
+            const roleList = document.getElementById('server-roles-list');
+            invList.innerHTML = ''; roleList.innerHTML = '';
+
+            // Render Friends to invite
+            db.ref(`friends/${currentUser.uid}`).once('value', snap => {
+                if(!snap.exists()) invList.innerHTML = '<span class="text-xs text-biscord-muted">Add friends first to invite them!</span>';
+                snap.forEach(child => {
+                    const fUid = child.key;
+                    const u = allUsersCache[fUid];
+                    if(!u) return;
+                    if(activeServer.members[fUid]) return; // already in server
+                    
+                    invList.innerHTML += `
+                        <div class="flex justify-between items-center bg-biscord-700 p-2 rounded">
+                            <span class="font-bold">${u.username}</span>
+                            <button onclick="sendServerInvite('${fUid}', '${serverId}')" class="bg-brand text-white px-3 py-1 rounded text-xs">Invite</button>
+                        </div>`;
+                });
+            });
+
+            // Render Roles
+            for(let mUid in activeServer.members) {
+                const u = allUsersCache[mUid];
+                if(!u) continue;
+                const role = activeServer.members[mUid];
+                roleList.innerHTML += `
+                    <div class="flex justify-between items-center bg-biscord-700 p-2 rounded">
+                        <span class="font-bold">${u.username}</span>
+                        <select onchange="db.ref('servers/${serverId}/members/${mUid}').set(this.value)" class="bg-biscord-900 text-white text-xs p-1 rounded border-none outline-none">
+                            <option value="member" ${role==='member'?'selected':''}>Member</option>
+                            <option value="admin" ${role==='admin'?'selected':''}>Admin</option>
+                        </select>
+                    </div>`;
+            }
+        }
+
+        function sendServerInvite(targetUid, serverId) {
+            db.ref(`userDMs/${currentUser.uid}/${targetUid}`).once('value', snap => {
+                let dmId = snap.val();
+                if(!dmId) {
+                    dmId = currentUser.uid < targetUid ? `${currentUser.uid}_${targetUid}` : `${targetUid}_${currentUser.uid}`;
+                    db.ref(`userDMs/${currentUser.uid}/${targetUid}`).set(dmId);
+                    db.ref(`userDMs/${targetUid}/${currentUser.uid}`).set(dmId);
+                }
+                db.ref(`dms/${dmId}`).push({
+                    type: 'invite', serverId: serverId, serverName: activeServer.name,
+                    uid: currentUser.uid, timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                alert("Invite sent via DM!");
+                hideModal('server-settings-modal');
+            });
+        }
+
         // --- 7. MESSAGING ---
         let msgListener = null;
         function loadMessages(path) {
@@ -512,14 +646,14 @@
                 const u = allUsersCache[msg.uid] || {username: 'Unknown'};
                 const time = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 const div = document.createElement('div');
-                div.className = "flex gap-4 hover:bg-biscord-900/30 p-1 rounded";
+                div.className = "flex gap-4 hover:bg-biscord-900/30 p-2 rounded transition";
                 div.innerHTML = `
-                    <div class="w-10 h-10 rounded-full bg-brand flex-shrink-0 flex items-center justify-center text-white cursor-pointer ${u.avatarDeco || ''}" onclick="showUserPopout(event, '${msg.uid}')">
+                    <div class="w-10 h-10 rounded-full bg-brand flex-shrink-0 flex items-center justify-center text-white cursor-pointer shadow-lg ${u.avatarDeco || ''}" onclick="showUserPopout(event, '${msg.uid}')">
                         ${u.username[0].toUpperCase()}
                     </div>
                     <div>
                         <div class="flex items-baseline gap-2">
-                            <span class="font-medium hover:underline cursor-pointer ${u.nameColor || ''}" onclick="showUserPopout(event, '${msg.uid}')">${u.username}</span>
+                            <span class="font-bold hover:underline cursor-pointer ${u.nameColor || ''}" onclick="showUserPopout(event, '${msg.uid}')">${u.username}</span>
                             <span class="text-xs text-biscord-muted">${time}</span>
                         </div>
                         <p class="text-biscord-main leading-relaxed">${msg.text}</p>
@@ -541,61 +675,65 @@
         };
 
         // --- 8. USER POPOUT & INVITES ---
-        let selectedPopoutUser = null;
         function showUserPopout(e, targetUid) {
             e.stopPropagation();
-            selectedPopoutUser = targetUid;
             const u = allUsersCache[targetUid];
             const popout = document.getElementById('user-popout');
             
-            document.getElementById('popout-avatar').innerText = u.username[0];
-            document.getElementById('popout-avatar').className = `w-12 h-12 rounded-full bg-brand flex items-center justify-center text-white font-bold text-xl ${u.avatarDeco || ''}`;
-            document.getElementById('popout-name').innerText = u.username;
-            document.getElementById('popout-name').className = `font-bold text-lg ${u.nameColor || 'text-biscord-main'}`;
+            // Apply Gradient Profile Background
+            popout.className = `hidden absolute rounded-lg shadow-2xl border border-biscord-900 p-4 w-72 z-50 transition-all ${u.profileGrad || 'bg-biscord-800'}`;
             
-            // Invite button visibility
-            const invBtn = document.getElementById('popout-invite');
-            if(currentView !== 'home' && activeServer && activeServer.owner === currentUser.uid && targetUid !== currentUser.uid) {
-                invBtn.classList.remove('hidden');
-                invBtn.onclick = () => sendServerInvite(targetUid, currentView);
-            } else {
-                invBtn.classList.add('hidden');
-            }
+            document.getElementById('popout-avatar').innerText = u.username[0];
+            document.getElementById('popout-avatar').className = `w-16 h-16 rounded-full bg-brand flex items-center justify-center text-white font-bold text-2xl shrink-0 ${u.avatarDeco || ''}`;
+            document.getElementById('popout-name').innerText = u.username;
+            document.getElementById('popout-name').className = `font-bold text-xl truncate ${u.nameColor || 'text-white'}`;
+            
+            // Bio
+            document.getElementById('popout-bio').innerText = u.bio || "This user hasn't written a bio yet.";
+            
+            // Add Friend Button visibility
+            const addBtn = document.getElementById('popout-add-friend');
+            db.ref(`friends/${currentUser.uid}/${targetUid}`).once('value', snap => {
+                if(!snap.exists() && targetUid !== currentUser.uid) {
+                    addBtn.classList.remove('hidden');
+                    addBtn.onclick = () => {
+                        db.ref(`friendRequests/${targetUid}/${currentUser.uid}`).set(true);
+                        alert("Friend request sent!");
+                        addBtn.classList.add('hidden');
+                    };
+                } else {
+                    addBtn.classList.add('hidden');
+                }
+            });
 
-            popout.style.left = `${e.clientX + 10}px`;
-            popout.style.top = `${e.clientY}px`;
+            // Calculate position to prevent going off-screen
+            let x = e.clientX + 15; let y = e.clientY;
+            if (x + 288 > window.innerWidth) x = e.clientX - 300;
+            popout.style.left = `${x}px`;
+            popout.style.top = `${y}px`;
             popout.classList.remove('hidden');
         }
 
-        window.onclick = () => document.getElementById('user-popout').classList.add('hidden');
-
-        function sendServerInvite(targetUid, serverId) {
-            db.ref(`userDMs/${currentUser.uid}/${targetUid}`).once('value', snap => {
-                let dmId = snap.val();
-                if(!dmId) {
-                    dmId = currentUser.uid < targetUid ? `${currentUser.uid}_${targetUid}` : `${targetUid}_${currentUser.uid}`;
-                    db.ref(`userDMs/${currentUser.uid}/${targetUid}`).set(dmId);
-                    db.ref(`userDMs/${targetUid}/${currentUser.uid}`).set(dmId);
-                }
-                db.ref(`dms/${dmId}`).push({
-                    type: 'invite', serverId: serverId, serverName: activeServer.name,
-                    uid: currentUser.uid, timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-                alert("Invite sent via DM!");
-            });
-        }
+        window.onclick = (e) => { 
+            if(!e.target.closest('#emoji-picker') && !e.target.closest('.fa-face-smile')) {
+                document.getElementById('emoji-picker').classList.add('hidden');
+            }
+            if(!e.target.closest('#user-popout')) {
+                document.getElementById('user-popout').classList.add('hidden'); 
+            }
+        };
 
         function renderInviteMsg(msg) {
             const main = document.getElementById('main-content');
             const div = document.createElement('div');
-            div.className = "bg-biscord-800 p-4 rounded border border-brand/50 w-64";
+            div.className = "bg-biscord-800 p-4 rounded border border-brand/50 w-64 mt-2 mb-2";
             div.innerHTML = `
-                <div class="text-xs text-biscord-muted font-bold uppercase mb-2">You've been invited to join a server</div>
+                <div class="text-[10px] text-biscord-muted font-bold uppercase mb-2">You've been invited to join a server</div>
                 <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 bg-biscord-700 rounded-lg flex items-center justify-center text-white">${msg.serverName[0]}</div>
-                    <div class="font-bold text-biscord-main">${msg.serverName}</div>
+                    <div class="w-10 h-10 bg-biscord-900 rounded-lg flex items-center justify-center text-white font-bold">${msg.serverName[0]}</div>
+                    <div class="font-bold text-white">${msg.serverName}</div>
                 </div>
-                <button onclick="joinServer('${msg.serverId}')" class="w-full bg-green-600 text-white py-2 rounded font-bold">Join</button>
+                <button onclick="joinServer('${msg.serverId}')" class="w-full bg-green-600 hover:bg-green-500 transition text-white py-1.5 rounded font-bold text-sm">Join Server</button>
             `;
             main.appendChild(div);
             main.scrollTop = main.scrollHeight;
@@ -603,28 +741,33 @@
 
         function joinServer(serverId) {
             db.ref(`servers/${serverId}/members/${currentUser.uid}`).set('member');
-            alert("Joined Server!");
+            alert("Joined Server successfully!");
+            loadServers();
         }
 
         // --- 9. SETTINGS & NITRO ---
         function showSettings() {
-            document.getElementById('edit-username').value = userData.username;
+            document.getElementById('edit-username').value = userData.username || '';
+            document.getElementById('edit-bio').value = userData.bio || '';
             document.getElementById('settings-modal').classList.remove('hidden');
             if(userData.nitro) {
-                document.getElementById('nitro-btn').innerText = "Nitro Active!";
+                document.getElementById('nitro-btn').innerText = "Nitro Active! ✨";
                 document.getElementById('nitro-btn').disabled = true;
                 document.getElementById('nitro-btn').classList.replace('bg-brand', 'bg-green-600');
                 document.getElementById('nitro-features').classList.remove('hidden');
                 document.getElementById('theme-select').value = userData.theme || 'dark';
                 document.getElementById('color-select').value = userData.nameColor || 'normal';
                 document.getElementById('deco-select').value = userData.avatarDeco || 'none';
+                document.getElementById('prof-grad-select').value = userData.profileGrad || 'bg-biscord-800';
             }
         }
 
-        function saveUsername() {
+        function saveProfile() {
             const nw = document.getElementById('edit-username').value;
+            const bio = document.getElementById('edit-bio').value;
             db.ref(`users/${currentUser.uid}/username`).set(nw);
-            alert("Username updated!");
+            db.ref(`users/${currentUser.uid}/bio`).set(bio);
+            alert("Profile updated!");
         }
 
         function claimNitro() {
